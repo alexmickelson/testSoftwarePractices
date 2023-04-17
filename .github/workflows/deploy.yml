@@ -9,9 +9,9 @@ jobs:
     runs-on: [ self-hosted ]
 
     steps:
-
-      - name: deploy
+      - name: checkout
         uses: actions/checkout@v2
+      - name: deploy
         run: |
           docker-compose build
           docker-compose up
