@@ -4,3 +4,22 @@ services:
     build: .
     ports:
       - "8080:80"
+
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Denver
+      - URL=testsoftware.alexmickelson.guru
+      - VALIDATION=http
+      - STAGING=true
+    volumes:
+      - /data/swag:/config
+    ports:
+      - 443:443
+      - 80:80 #optional
+    restart: unless-stopped
