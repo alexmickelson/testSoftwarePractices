@@ -16,7 +16,7 @@ services:
       - TZ=America/Denver
       - URL=testsoftware.alexmickelson.guru
       - VALIDATION=http
-      - STAGING=true
+      - STAGING=false
     volumes:
       - /data/swag:/config
     ports:
