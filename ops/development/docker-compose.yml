@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   myblazorserverapp:
-    build: ../aspnet
+    build: ../../blazorwasm
 
   reverse_proxy:
     image: nginx
