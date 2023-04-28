@@ -1,7 +1,25 @@
 version: "2.2"
 services:
-  myblazorserverapp:
-    build: ../../blazorwasm
+  web_blue:
+    build: ../../aspnet
+    container_name: web_blue
+    image: test:2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
+  web_green:
+    build: ../../aspnet
+    container_name: web_green
+    image: test:2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
 
   reverse_proxy:
     image: nginx
@@ -10,3 +28,10 @@ services:
     ports:
       - 8080:80
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 3s
+    # docker compose exec reverse_proxy nginx -s reload
