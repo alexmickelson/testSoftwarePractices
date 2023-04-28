@@ -5,7 +5,7 @@ services:
     ports:
       - "8080:80"
 
-  swag:
+  reverse_proxy:
     image: lscr.io/linuxserver/swag
     container_name: swag
     cap_add:
