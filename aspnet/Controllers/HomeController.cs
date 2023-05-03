@@ -15,7 +15,16 @@ public class HomeController : Controller
 
   public IActionResult Index()
   {
-    System.Console.WriteLine("Serving home page");
+    var redisCache = new RedisCache("redis:6379");
+    var timeKey = "timekey";
+
+
+    var value = redisCache.Get(timeKey);
+    Console.WriteLine($"last access time from Redis cache: {value}");
+
+    var now = DateTime.Now;
+    redisCache.Set(timeKey, now.ToString(), TimeSpan.FromMinutes(1));
+
     return View();
   }
 

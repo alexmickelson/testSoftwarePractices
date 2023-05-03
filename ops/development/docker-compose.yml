@@ -35,3 +35,84 @@ services:
       retries: 3
       start_period: 3s
     # docker compose exec reverse_proxy nginx -s reload
+
+
+  redis:
+    image: docker.io/bitnami/redis:7.0
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      # - REDIS_PASSWORD=mypassword123
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - 6379:6379
+    # volumes:
+    #   - /data/redis:/bitnami/redis/data
+# psql -U $POSTGRES_USER $POSTGRES_DB
+
+  # pg_primary:
+  #   image: postgres:13
+  #   environment:
+  #     POSTGRES_DB: testdb
+  #     POSTGRES_USER: myuser
+  #     POSTGRES_PASSWORD: mypass
+  #     POSTGRES_HOST_AUTH_METHOD: trust
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     # - pg_primary_data:/var/lib/postgresql/data
+  #     - ./postgres/primary.conf:/etc/postgresql/postgresql.conf
+  #     - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
+
+  # pg_replica:
+  #   image: postgres:13
+  #   environment:
+  #     POSTGRES_DB: testdb
+  #     POSTGRES_USER: myuser
+  #     POSTGRES_PASSWORD: mypass
+  #     POSTGRES_HOST_AUTH_METHOD: trust
+  #     REPLICATE_FROM: pg_primary
+  #     # PGDATA: /replicadata
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     # - pg_replica_data:/data/
+  #     - ./postgres/replica.conf:/etc/postgresql/postgresql.conf
+  #     - ./postgres/setup_replication.sh:/docker-entrypoint-initdb.d/setup_replication.sh
+
+# psql -U $POSTGRESQL_REPLICATION_USER $POSTGRESQL_DATABASE
+  pg_primary:
+    image: docker.io/bitnami/postgresql:13
+    ports:
+      - 5432:5432
+    # volumes:
+    #   - postgresql_master_data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_PGAUDIT_LOG=READ,WRITE
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=password123
+      - POSTGRESQL_DATABASE=my_database
+      - ALLOW_EMPTY_PASSWORD=yes
+
+# psql -U $POSTGRESQL_USER $POSTGRESQL_DATABASE
+  pg_replica:
+    image: docker.io/bitnami/postgresql:13
+    # ports:
+    #   # - 5433:5432
+    depends_on:
+      - pg_primary
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=my_password
+      - POSTGRESQL_MASTER_HOST=pg_primary
+      - POSTGRESQL_PGAUDIT_LOG=READ,WRITE
+      - POSTGRESQL_LOG_HOSTNAME=true
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      # - POSTGRESQL_MASTER_PORT_NUMBER=5432
